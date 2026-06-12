@@ -1627,7 +1627,7 @@ class TestAsyncPubSubTimeoutPropagation:
         Fixes redis/redis-py#4098.
         """
         # Use a short socket timeout to simulate the Redis 8.0 default.
-        client = redis.Redis(socket_timeout=0.5)
+        client = redis.asyncio.Redis(socket_timeout=0.5)
         p = client.pubsub()
         await p.subscribe("foo")
         # Read subscription message
@@ -1669,7 +1669,7 @@ class TestAsyncPubSubTimeoutPropagation:
         Test that listen(timeout=X) returns after the specified timeout
         when no message arrives.
         """
-        client = redis.Redis(socket_timeout=0.5)
+        client = redis.asyncio.Redis(socket_timeout=0.5)
         p = client.pubsub()
         await p.subscribe("foo")
         # Read subscription message
@@ -1695,7 +1695,7 @@ class TestAsyncPubSubTimeoutPropagation:
         """
         Test that listen(timeout=None) blocks indefinitely until a message arrives.
         """
-        client = redis.Redis(socket_timeout=0.5)
+        client = redis.asyncio.Redis(socket_timeout=0.5)
         p = client.pubsub()
         await p.subscribe("foo")
         # Read subscription message
