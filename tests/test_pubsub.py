@@ -2240,7 +2240,10 @@ class TestPubSubTimeoutPropagation:
         Fixes redis/redis-py#4098.
         """
         # Use a short socket timeout to simulate the Redis 8.0 default.
-        client = redis.Redis(socket_timeout=0.5)
+        # Use the same connection pool as the fixture but override socket_timeout.
+        kwargs = r.connection_pool.connection_kwargs.copy()
+        kwargs["socket_timeout"] = 0.5
+        client = redis.Redis(**kwargs)
         p = client.pubsub()
         p.subscribe("foo")
         # Read subscription message
@@ -2272,6 +2275,7 @@ class TestPubSubTimeoutPropagation:
         # Should have waited at least 1 second, proving listen() ignored socket_timeout
         assert elapsed >= 0.9
         thread.join(timeout=2.0)
+        client.close()
 
 
 class TestClusterPubSubTimeoutPropagation:

@@ -1618,7 +1618,7 @@ class TestAsyncPubSubTimeoutPropagation:
         await p.aclose()
 
     @pytest.mark.onlynoncluster
-    async def test_listen_blocks_until_message_despite_socket_timeout(self, r):
+    async def test_listen_blocks_until_message_despite_socket_timeout(self, create_redis):
         """
         Test that listen() blocks indefinitely until a message arrives,
         even when the underlying connection has a short socket_timeout.
@@ -1627,7 +1627,7 @@ class TestAsyncPubSubTimeoutPropagation:
         Fixes redis/redis-py#4098.
         """
         # Use a short socket timeout to simulate the Redis 8.0 default.
-        client = redis.asyncio.Redis(socket_timeout=0.5)
+        client = await create_redis(socket_timeout=0.5)
         p = client.pubsub()
         await p.subscribe("foo")
         # Read subscription message
@@ -1664,12 +1664,12 @@ class TestAsyncPubSubTimeoutPropagation:
         await client.aclose()
 
     @pytest.mark.onlynoncluster
-    async def test_listen_with_timeout_parameter(self, r):
+    async def test_listen_with_timeout_parameter(self, create_redis):
         """
         Test that listen(timeout=X) returns after the specified timeout
         when no message arrives.
         """
-        client = redis.asyncio.Redis(socket_timeout=0.5)
+        client = await create_redis(socket_timeout=0.5)
         p = client.pubsub()
         await p.subscribe("foo")
         # Read subscription message
@@ -1691,11 +1691,11 @@ class TestAsyncPubSubTimeoutPropagation:
         await client.aclose()
 
     @pytest.mark.onlynoncluster
-    async def test_listen_timeout_none_blocks_indefinitely(self, r):
+    async def test_listen_timeout_none_blocks_indefinitely(self, create_redis):
         """
         Test that listen(timeout=None) blocks indefinitely until a message arrives.
         """
-        client = redis.asyncio.Redis(socket_timeout=0.5)
+        client = await create_redis(socket_timeout=0.5)
         p = client.pubsub()
         await p.subscribe("foo")
         # Read subscription message
